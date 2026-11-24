@@ -212,9 +212,9 @@ public class TextDisplayEntity extends DisplayBaseEntity {
     public void setStyleFlags(ByteEntityMetadata metadata) {
         byte flags = metadata.getPrimitiveValue();
 
-        this.defaultBackground = (flags & 0x01) == 1;
-        this.shadow = ((flags >> 1) & 0x01) == 1;
-        this.seeThrough = ((flags >> 2) & 0x01) == 1;
+        this.shadow = (flags & 0x01) != 0;
+        this.seeThrough = (flags & 0x02) != 0;
+        this.defaultBackground = (flags & 0x04) != 0;
     }
 
     private void processText() {
