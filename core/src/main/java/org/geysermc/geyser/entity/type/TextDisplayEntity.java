@@ -329,13 +329,7 @@ public class TextDisplayEntity extends DisplayBaseEntity {
         text.setDepthTest(!seeThrough);
         text.setDimension(session.getBedrockDimension().bedrockId());
 
-        if (Boolean.getBoolean("Geyser.DebugTextDisplays")) {
-            Vector3f position = bedrockPosition();
-            Vector3f offset = text.getPosition();
-            text.setText("ID: " + geyserId + ", Pos: " + position.getX() + ", " + position.getY() + ", " + position.getZ() + ", Off: " + offset.getX() + ", " + offset.getY() + ", " + offset.getZ());
-        } else {
-            text.setText(this.text);
-        }
+        text.setText(this.text);
 
         DebugDrawerPacket packet = new DebugDrawerPacket();
         packet.getShapes().add(text);
