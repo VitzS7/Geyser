@@ -89,7 +89,10 @@ public class DisplayBaseEntity extends Entity {
     }
 
     public void setBillboard(ByteEntityMetadata metadata) {
-        this.billboard = Billboard.values()[metadata.getPrimitiveValue()];
+        Billboard[] valores = Billboard.values();
+        byte indice = metadata.getPrimitiveValue();
+        // igual ao Java: índice inválido cai no FIXED
+        this.billboard = indice >= 0 && indice < valores.length ? valores[indice] : Billboard.FIXED;
     }
 
     public void setViewDistance(FloatEntityMetadata metadata) {
