@@ -397,8 +397,9 @@ public class TextDisplayEntity extends DisplayBaseEntity {
         // I'm not even gonna pretend I know why x needs to be negative, but it does, and it works
         Vector3f rotation = Vector3f.from(-Math.toDegrees(x), Math.toDegrees(y), Math.toDegrees(z));
 
+        // Java tilts the text with the entity pitch, Bedrock's x axis is flipped (same as the negated x above)
         Vector3f outputRotation = Vector3f.from(
-            0, (-getYaw()) + 180, 0
+            -getPitch(), (-getYaw()) + 180, 0
         );
 
         // Add rotation
