@@ -328,8 +328,9 @@ public class TextDisplayEntity extends DisplayBaseEntity {
     public void setVehicle(Entity vehicle) {
         super.setVehicle(vehicle);
         // This is important, any vehicle update *needs* to update the text, since the offset
-        // applied may have changed due to a different hitbox
-        updatePrimitiveText();
+        // applied may have changed due to a different hitbox. The metadata update that follows
+        // mounting and dismounting redraws it, after the mount offset has been applied
+        setDisplayDataDirty();
     }
 
     public void updatePrimitiveText() {
