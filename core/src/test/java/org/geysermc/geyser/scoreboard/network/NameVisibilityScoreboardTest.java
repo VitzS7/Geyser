@@ -28,6 +28,7 @@ package org.geysermc.geyser.scoreboard.network;
 import net.kyori.adventure.text.Component;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataTypes;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityFlag;
+import org.cloudburstmc.protocol.bedrock.packet.DebugDrawerPacket;
 import org.cloudburstmc.protocol.bedrock.packet.SetEntityDataPacket;
 import org.cloudburstmc.protocol.bedrock.packet.SetEntityLinkPacket;
 import org.geysermc.geyser.entity.type.living.ArmorStandEntity;
@@ -411,11 +412,16 @@ public class NameVisibilityScoreboardTest {
             context.translate(new JavaSetPassengersTranslator(), new ClientboundSetPassengersPacket(2, new int[]{3}));
             // Passenger/vehicle link
             assertNextPacketType(context, SetEntityLinkPacket.class);
+            // The text display is redrawn when it starts riding, and again when its offset is applied
+            assertNextPacketType(context, DebugDrawerPacket.class);
+            assertNextPacketType(context, DebugDrawerPacket.class);
             // Passenger metadata
             assertNextPacketType(context, SetEntityDataPacket.class);
 
             // Java keeps showing the name when only text displays ride the entity
             player.updateBedrockMetadata();
+            // only the passenger text display is redrawn, the player name is not sent again
+            assertNextPacketType(context, DebugDrawerPacket.class);
             assertNoNextPacket(context);
         });
     }

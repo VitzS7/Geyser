@@ -29,6 +29,7 @@ import io.netty.channel.EventLoop;
 import org.cloudburstmc.protocol.bedrock.packet.AddEntityPacket;
 import org.cloudburstmc.protocol.bedrock.packet.AddPlayerPacket;
 import org.cloudburstmc.protocol.bedrock.packet.BedrockPacket;
+import org.cloudburstmc.protocol.bedrock.packet.DebugDrawerPacket;
 import org.geysermc.geyser.GeyserImpl;
 import org.geysermc.geyser.entity.VanillaEntities;
 import org.geysermc.geyser.entity.spawn.EntitySpawnContext;
@@ -36,6 +37,7 @@ import org.geysermc.geyser.entity.type.TextDisplayEntity;
 import org.geysermc.geyser.entity.type.living.ArmorStandEntity;
 import org.geysermc.geyser.entity.type.player.PlayerEntity;
 import org.geysermc.geyser.entity.type.player.SessionPlayerEntity;
+import org.geysermc.geyser.level.BedrockDimension;
 import org.geysermc.geyser.session.GeyserSession;
 import org.geysermc.geyser.session.cache.EntityCache;
 import org.geysermc.geyser.session.cache.WorldCache;
@@ -70,6 +72,9 @@ public class GeyserMockContextScoreboard {
         when(session.getGeyser()).thenReturn(context.mockOrSpy(GeyserImpl.class));
 
         when(session.locale()).thenReturn("en_US");
+
+        // text displays read the dimension when they send their text to the client
+        when(session.getBedrockDimension()).thenReturn(BedrockDimension.OVERWORLD);
 
         // Tests act as if they are running on the session's event loop thread, so
         // EntityCache's off-thread read guard should take the no-lock fast path.
@@ -130,6 +135,8 @@ public class GeyserMockContextScoreboard {
         entityCache.spawnEntity(textDisplay);
 
         assertNextPacketType(context, AddEntityPacket.class);
+        // the text itself is drawn through the debug drawer
+        assertNextPacketType(context, DebugDrawerPacket.class);
         return textDisplay;
     }
 
