@@ -37,16 +37,12 @@ import org.cloudburstmc.protocol.bedrock.data.debugshape.DebugShape;
 import org.cloudburstmc.protocol.bedrock.data.debugshape.DebugText;
 import org.cloudburstmc.protocol.bedrock.data.entity.EntityDataTypes;
 import org.cloudburstmc.protocol.bedrock.packet.DebugDrawerPacket;
-import org.geysermc.geyser.GeyserImpl;
 import org.geysermc.geyser.entity.VanillaEntities;
 import org.geysermc.geyser.entity.spawn.EntitySpawnContext;
 import org.geysermc.geyser.entity.type.living.ArmorStandEntity;
-import org.geysermc.geyser.text.ChatColor;
 import org.geysermc.geyser.translator.text.MessageTranslator;
 import org.geysermc.geyser.util.ColorUtils;
-import org.geysermc.geyser.util.EntityUtils;
 import org.geysermc.geyser.util.MathUtils;
-import org.geysermc.geyser.util.SignUtils;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.metadata.EntityMetadata;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.metadata.type.BooleanEntityMetadata;
 import org.geysermc.mcprotocollib.protocol.data.game.entity.metadata.type.ByteEntityMetadata;
@@ -100,7 +96,7 @@ public class TextDisplayEntity extends DisplayBaseEntity {
     private int lineWidth = 200;
 
     @Getter
-    private @NonNull Color backgroundColor = new Color(0, 0, 0, 40);
+    private @NonNull Color backgroundColor = new Color(0, 0, 0, 64);
 
     @Getter
     private byte textOpacity = -1;
@@ -216,9 +212,9 @@ public class TextDisplayEntity extends DisplayBaseEntity {
     public void setStyleFlags(ByteEntityMetadata metadata) {
         byte flags = metadata.getPrimitiveValue();
 
-        this.defaultBackground = (flags & 0x01) == 1;
-        this.shadow = ((flags >> 1) & 0x01) == 1;
-        this.seeThrough = ((flags >> 2) & 0x01) == 1;
+        this.shadow = (flags & 0x01) != 0;
+        this.seeThrough = (flags & 0x02) != 0;
+        this.defaultBackground = (flags & 0x04) != 0;
     }
 
     private void processText() {
@@ -333,13 +329,7 @@ public class TextDisplayEntity extends DisplayBaseEntity {
         text.setDepthTest(!seeThrough);
         text.setDimension(session.getBedrockDimension().bedrockId());
 
-        if (Boolean.getBoolean("Geyser.DebugTextDisplays")) {
-            Vector3f position = bedrockPosition();
-            Vector3f offset = text.getPosition();
-            text.setText("ID: " + geyserId + ", Pos: " + position.getX() + ", " + position.getY() + ", " + position.getZ() + ", Off: " + offset.getX() + ", " + offset.getY() + ", " + offset.getZ());
-        } else {
-            text.setText(this.text);
-        }
+        text.setText(this.text);
 
         DebugDrawerPacket packet = new DebugDrawerPacket();
         packet.getShapes().add(text);
@@ -401,8 +391,9 @@ public class TextDisplayEntity extends DisplayBaseEntity {
         // I'm not even gonna pretend I know why x needs to be negative, but it does, and it works
         Vector3f rotation = Vector3f.from(-Math.toDegrees(x), Math.toDegrees(y), Math.toDegrees(z));
 
+        // Java tilts the text with the entity pitch, Bedrock's x axis is flipped (same as the negated x above)
         Vector3f outputRotation = Vector3f.from(
-            0, (-getYaw()) + 180, 0
+            -getPitch(), (-getYaw()) + 180, 0
         );
 
         // Add rotation
