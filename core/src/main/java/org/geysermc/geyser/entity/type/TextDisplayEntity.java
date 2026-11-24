@@ -96,7 +96,7 @@ public class TextDisplayEntity extends DisplayBaseEntity {
     private int lineWidth = 200;
 
     @Getter
-    private @NonNull Color backgroundColor = new Color(0, 0, 0, 40);
+    private @NonNull Color backgroundColor = new Color(0, 0, 0, 64);
 
     @Getter
     private byte textOpacity = -1;
